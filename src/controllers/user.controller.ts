@@ -82,7 +82,7 @@ export const login = async (req: Request, res: Response) => {
 
     await Token.create({
       userId: user._id,
-      token: accessToken,
+      token: refreshToken,
     });
 
     res.status(200).json({ message: "Login successful", accessToken });

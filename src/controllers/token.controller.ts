@@ -14,6 +14,7 @@ export const refreshToken = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken;
+    console.log('refreshToken', refreshToken);
 
     if (!refreshToken) {
       return res.status(401).json({ message: "No refresh token provided" });
@@ -24,6 +25,7 @@ export const refreshToken = async (
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET as string
     );
+    console.log('decoded', decoded);
 
     if (!decoded) {
       return res.status(403).json({ message: "Invalid refresh token" });
@@ -36,6 +38,8 @@ export const refreshToken = async (
       token: refreshToken,
     });
 
+    console.log('tokenRecord', tokenRecord);
+
     if (!tokenRecord) {
       return res.status(403).json({ message: "Refresh token not found" });
     }
@@ -47,6 +51,10 @@ export const refreshToken = async (
     if (!user) {
       return res.status(403).json({ message: "User not found" });
     }
+
+    // increment token version
+    user.tokenVersion += 1;
+    await user.save();
 
     // Generate new access token
     const accessToken = generateAccessToken(
